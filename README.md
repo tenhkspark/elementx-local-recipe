@@ -31,6 +31,14 @@ Prerequisites:
 - Tailscale (MagicDNS enabled) + the Tailscale app and Element X on your iPhone
 - Time: 30–60 minutes (about 20 without the bot)
 
+**How local is "fully local"?** Message bodies, media, accounts and — with a
+local LLM brain — the bot's reasoning never leave your network. Three paths
+still touch the outside: ① Tailscale's control plane (connection metadata;
+run self-hosted Headscale to eliminate this), ② iOS push notifications
+(Element's Sygnal → Apple APNs; in plain rooms the push payload contains the
+message body — see §8; Android UnifiedPush removes this path), ③ the Element X
+app itself (App Store distribution, in-app telemetry settings).
+
 ---
 
 ## 0. Decide these first (they cannot be changed later)
@@ -307,9 +315,10 @@ tailscaled → colima/Docker → container → 127.0.0.1:8008 → tailscale serv
 
 1. **server_name is forever.** Changing it invalidates every ID, room and
    history.
-2. **E2EE kills the bot.** On macOS the bot-side crypto library (libolm) does
-   not build. If a room gets `m.room.encryption`, the bot can no longer read
-   it. Run plain rooms.
+2. **E2EE kills the bot** — on a macOS hub. On a Linux host the bot-side
+   library (mautrix with Olm/Megolm) works natively, so an encrypted-room bot
+   is achievable there (community examples exist; see Credits). If a room gets
+   `m.room.encryption`, the macOS bot can no longer read it. Run plain rooms.
 3. **Never run two homeservers with the same server_name at once** (split
    brain = the same account written into two databases, histories never
    reconcile). With a standby machine, always stop one before starting the
@@ -404,7 +413,9 @@ of this recipe should need no changes.
 - [Hermes Agent](https://hermes-agent.nousresearch.com) — the bot gateway (Nous Research)
 - Community knowledge: self-hosting threads on r/selfhosted and Hacker News,
   the [Tailscale × iCloud Private Relay issue](https://github.com/tailscale/tailscale/issues/21677),
-  and the [Element X iOS pusher re-registration bug](https://github.com/element-hq/element-x-ios/issues/2602)
+  the [Element X iOS pusher re-registration bug](https://github.com/element-hq/element-x-ios/issues/2602),
+  and a [kindred write-up of moving a Hermes bot from Signal to Matrix
+  (with E2EE, on Linux)](https://www.reddit.com/r/hermesagent/comments/1towdi5/i_moved_my_hermes_agent_from_signal_to_matrix/)
 
 ### Contributors
 

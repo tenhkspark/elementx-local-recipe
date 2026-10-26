@@ -31,6 +31,13 @@ iPhone (Element X) ──HTTPS──▶ tailscale serve (443)
 - Tailscale(MagicDNS 활성화) + iPhone에 Tailscale 앱과 Element X
 - 소요 시간: 30~60분(봇 없이는 약 20분)
 
+**"완전 로컬"의 범위는?** 메시지 본문·미디어·계정, 그리고 (두뇌를 로컬 LLM으로
+하면) 봇의 추론까지 네트워크 밖으로 나가지 않습니다. 다만 외부에 닿는 경로가
+3개 있습니다: ① Tailscale의 제어 평면(연결 메타데이터. 제거하려면 자체 호스트
+Headscale) ② iOS 푸시 알림(Element의 Sygnal → Apple APNs. 평문 방에서는 푸시
+페이로드에 본문이 실림 — §8 참고. Android의 UnifiedPush로 이 경로를 없앨 수
+있음) ③ Element X 앱 자체(App Store 배포·앱 내 텔레메트리 설정).
+
 ---
 
 ## 0. 먼저 정할 것(나중에 바꿀 수 없음)
@@ -294,9 +301,11 @@ tailscaled → colima/Docker → 컨테이너 → 127.0.0.1:8008 → tailscale s
 ## 9. 함정(실전 검증)
 
 1. **server_name은 영원**. 바꾸면 모든 ID·방·기록이 무효.
-2. **E2EE는 봇을 죽입니다.** macOS에서는 봇 쪽 암호화 라이브러리(libolm)가
-   빌드되지 않습니다. 방에 `m.room.encryption`을 세우면 봇은 전부 못 읽게
-   됩니다. 평문 운용으로 통하세요.
+2. **E2EE는 봇을 죽입니다** — macOS 허브의 경우. Linux 호스트에서는 봇 쪽
+   암호화 라이브러리(mautrix의 Olm/Megolm)가 네이티브로 동작하므로 암호화 방에
+   대응하는 봇도 만들 수 있습니다(커뮤니티 사례 있음·Credits 참고). 방에
+   `m.room.encryption`을 세우면 macOS의 봇은 전부 못 읽게 됩니다. 평문 운용으로
+   통하세요.
 3. **같은 server_name의 서버를 2대에서 동시 기동 금지**(split brain = 같은
    계정이 두 DB에 기록되어 기록이 영원히 불일치). 대기기를 만들 때는 반드시
    한쪽을 끄고 다른 쪽을 올리세요.
@@ -383,7 +392,8 @@ Conduit 개발은 사실상 1인 프로젝트로 느려졌습니다(미디어 pu
 - [Hermes Agent](https://hermes-agent.nousresearch.com) — 봇 gateway(Nous Research)
 - 커뮤니티 지식: r/selfhosted·Hacker News의 셀프호스팅 사례,
   [Tailscale × iCloud Private Relay 알려진 문제](https://github.com/tailscale/tailscale/issues/21677),
-  [Element X iOS의 pusher 재등록 버그](https://github.com/element-hq/element-x-ios/issues/2602)
+  [Element X iOS의 pusher 재등록 버그](https://github.com/element-hq/element-x-ios/issues/2602),
+  그리고 [Hermes 봇을 Signal에서 Matrix로 옮긴 유사 사례(Linux에서 E2EE)](https://www.reddit.com/r/hermesagent/comments/1towdi5/i_moved_my_hermes_agent_from_signal_to_matrix/)
 
 ### Contributors
 

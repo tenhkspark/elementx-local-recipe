@@ -30,6 +30,13 @@ iPhone (Element X) ──HTTPS──▶ tailscale serve (443)
 - Tailscale（启用 MagicDNS）+ iPhone 上安装 Tailscale 应用和 Element X
 - 耗时：30–60 分钟（不含机器人约 20 分钟）
 
+**"完全本地"的范围是?** 消息正文、媒体、账号，以及（大脑用本地 LLM 时）
+机器人的推理都不会离开你的网络。但仍有三条路径接触外部：① Tailscale 的控制
+平面（连接元数据；想消除可用自托管的 Headscale）② iOS 推送通知（Element 的
+Sygnal → Apple APNs；明文房间的推送载荷里带正文——见§8；Android 的
+UnifiedPush 可以消除这条路径）③ Element X 应用本身（App Store 分发、应用内
+遥测设置）。
+
 ---
 
 ## 0. 先做决定（以后改不了）
@@ -280,8 +287,10 @@ tailscaled → colima/Docker → 容器 → 127.0.0.1:8008 → tailscale serve �
 ## 9. 坑（实测总结）
 
 1. **server_name 永久**。改了所有 ID、房间、历史全部失效。
-2. **E2EE 会弄死机器人。** macOS 上机器人侧的加密库（libolm）编译不了。
-   房间一旦有 `m.room.encryption`，机器人什么都读不到。用明文房间。
+2. **E2EE 会弄死机器人**——仅指 macOS 中枢。在 Linux 主机上，机器人侧的加密
+   库（mautrix 的 Olm/Megolm）可以原生运行，加密房间的机器人在那里是可行的
+   （有社区案例·见 Credits）。房间一旦有 `m.room.encryption`，macOS 的机器人
+   什么都读不到。用明文房间。
 3. **同一 server_name 的服务器绝不能两台同时跑**（split brain＝同一账号写进
    两个数据库，历史永远对不上）。有备用机时，一定先停一台再开另一台。
 4. **Conduit v0.10.15 忽略 `well_known_client`。** discovery 的正本是你输入
@@ -361,7 +370,8 @@ serve / well-known / 机器人侧应该都不用改。
 - [Hermes Agent](https://hermes-agent.nousresearch.com) — 机器人 gateway（Nous Research）
 - 社区经验：r/selfhosted 与 Hacker News 的自托管案例、
   [Tailscale × iCloud 私人中继的已知问题](https://github.com/tailscale/tailscale/issues/21677)、
-  [Element X iOS 的 pusher 重注册 bug](https://github.com/element-hq/element-x-ios/issues/2602)
+  [Element X iOS 的 pusher 重注册 bug](https://github.com/element-hq/element-x-ios/issues/2602)、
+  以及[把 Hermes 机器人从 Signal 迁到 Matrix 的同类案例（Linux 上启用 E2EE）](https://www.reddit.com/r/hermesagent/comments/1towdi5/i_moved_my_hermes_agent_from_signal_to_matrix/)
 
 ### Contributors（贡献者）
 

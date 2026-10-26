@@ -30,6 +30,13 @@ iPhone (Element X) ──HTTPS──▶ tailscale serve (443)
 - Tailscale（MagicDNS 有効）+ iPhone に Tailscale アプリと Element X
 - 作業時間: 30〜60 分（bot なし構成なら 20 分）
 
+**「完全ローカル」の範囲は?** メッセージ本文・メディア・アカウント、そして
+（頭脳をローカルLLMにすれば）botの推論までネットワークの外に出ません。ただし
+外部に触れる経路が3つあります: ①Tailscaleの制御平面（接続メタデータ。排除した
+ければ自ホスト版のHeadscale）②iOSのプッシュ通知（Element社のSygnal→Apple
+APNs。平文部屋では通知ペイロードに本文が乗る—§8参照。AndroidのUnifiedPushなら
+この経路をなくせる）③Element Xアプリ自体（App Store配布・アプリ内テレメトリ設定）。
+
 ---
 
 ## 0. 設計判断を先に（後から変えられないもの）
@@ -297,9 +304,11 @@ tailscaled → colima/Docker → コンテナ → 127.0.0.1:8008 → tailscale s
 ## 9. 落とし穴（実測ベースの gotchas）
 
 1. **server_name は永久**。変えると全 ID・部屋・履歴が無効。
-2. **E2EE は bot を殺す。** macOS では bot 側の暗号化ライブラリ（libolm）が
-   ビルドできない。部屋に `m.room.encryption` を立てると bot は全部読めなく
-   なる。平文運用で通す。
+2. **E2EE は bot を殺す**——macOS ハブの場合。Linux ホストなら bot 側の暗号化
+   ライブラリ（mautrix の Olm/Megolm）がネイティブに動くので、暗号化部屋に対応
+   した bot も作れる（コミュニティ事例あり・Credits 参照）。部屋に
+   `m.room.encryption` を立てると macOS の bot は全部読めなくなる。平文運用で
+   通す。
 3. **同じ server_name のサーバーを 2 台で同時起動しない**（split brain ＝
    同じアカウントが 2 つの DB に書かれ、履歴が永遠に不一致になる）。
    待機系を作る場合は必ず片方を止めてからもう片方を上げる。
@@ -386,7 +395,8 @@ Conduit の開発は実質 1 人でペースが落ちています（メディア
 - [Hermes Agent](https://hermes-agent.nousresearch.com) — bot gateway（Nous Research）
 - 参考にしたコミュニティ知見: r/selfhosted・Hacker News のセルフホスト事例、
   [Tailscale×iCloud Private Relay の既知問題](https://github.com/tailscale/tailscale/issues/21677)、
-  [Element X iOS の pusher 再登録バグ](https://github.com/element-hq/element-x-ios/issues/2602)
+  [Element X iOS の pusher 再登録バグ](https://github.com/element-hq/element-x-ios/issues/2602)、
+  そして [Hermes bot を Signal から Matrix へ移した同様の事例（Linux 上で E2EE 有効）](https://www.reddit.com/r/hermesagent/comments/1towdi5/i_moved_my_hermes_agent_from_signal_to_matrix/)
 
 ### Contributors（貢献者）
 
