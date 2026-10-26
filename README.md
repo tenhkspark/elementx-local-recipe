@@ -1,6 +1,6 @@
 [English](README.md) | [한국어](README-ko.md) | [简体中文](README-zh.md) | [日本語](README-ja.md)
 
-# Element X × Conduit × Tailscale — a fully local chat recipe
+# Element X × Tuwunel × Tailscale — a fully local chat recipe
 
 **No matrix.org, no open ports, no cloud accounts.** A Matrix chat that runs
 entirely between your phone and your own server — with an AI bot powered by a
@@ -9,7 +9,7 @@ Mac mini + iPhone + Element X.
 
 ```
 iPhone (Element X) ──HTTPS──▶ tailscale serve (443)
-                                 ├── /_matrix     ─▶ 127.0.0.1:8008   Conduit/Tuwunel (Docker)
+                                 ├── /_matrix     ─▶ 127.0.0.1:8008   Tuwunel (Docker)
                                  └── /.well-known ─▶ 127.0.0.1:9111   static JSON
 On the server:
   Homeserver ── RocksDB (./db/)
@@ -191,7 +191,7 @@ POST /_matrix/client/v3/register
 2. On the Element X sign-in screen choose "Sign in manually → Change account
    provider → Other" and enter `https://matrix.example.ts.net`
    (QR-code login requires Matrix Authentication Service and does not work
-   with Conduit. You log in with username + password. Element X first checks
+   on Conduit or Tuwunel. You log in with username + password. Element X first checks
    for OIDC auth metadata and falls back to password login, so it goes through
    cleanly without MAS.)
 3. Log in with the account from step 4

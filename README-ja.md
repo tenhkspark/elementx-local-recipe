@@ -1,6 +1,6 @@
 [English](README.md) | [한국어](README-ko.md) | [简体中文](README-zh.md) | [日本語](README-ja.md)
 
-# Element X × Conduit × Tailscale — 自宅完結チャット・レシピ
+# Element X × Tuwunel × Tailscale — 自宅完結チャット・レシピ
 
 **matrix.org も、公開ポートも、クラウドアカウントも使わない。** スマホと自宅サーバー
 の間だけで完結する Matrix チャットに、ローカル LLM の AI bot を足す手順。
@@ -8,10 +8,10 @@
 
 ```
 iPhone (Element X) ──HTTPS──▶ tailscale serve (443)
-                                 ├── /_matrix     ─▶ 127.0.0.1:8008   Conduit (Docker)
+                                 ├── /_matrix     ─▶ 127.0.0.1:8008   Tuwunel (Docker)
                                  └── /.well-known ─▶ 127.0.0.1:9111   静的JSON
 自宅サーバー内:
-  Conduit ── RocksDB (./db/)
+  Tuwunel ── RocksDB (./db/)
   bot (Hermes Agent gateway) ── 127.0.0.1:8008 ── OpenAI互換エンドポイント(ローカルLLM)
 ```
 
@@ -187,7 +187,7 @@ POST /_matrix/client/v3/register
    manually）→ アカウントプロバイダを変更 → その他（Other）」から
    `https://matrix.example.ts.net` を入力
    （QR コードログインは Matrix Authentication Service 前提なので
-   Conduit では使えません。ユーザー名＋パスワードでログインします。
+   Conduit/Tuwunel では使えません。ユーザー名＋パスワードでログインします。
    Element X はまず OIDC 認証メタデータを確認し、無ければパスワード
    ログインへフォールバックするため、MAS 無しでも素直に通ります）
 3. 手順 4 で作ったユーザー名とパスワードでログイン

@@ -1,6 +1,6 @@
 [English](README.md) | [한국어](README-ko.md) | [简体中文](README-zh.md) | [日本語](README-ja.md)
 
-# Element X × Conduit × Tailscale — 完全本地化聊天方案
+# Element X × Tuwunel × Tailscale — 完全本地化聊天方案
 
 **不用 matrix.org、不开公网端口、不用云账号。** 在手机与自家服务器之间完整
 运行的 Matrix 聊天，再叠加一个由本地 LLM 驱动的 AI 机器人。以下全部内容来自
@@ -8,7 +8,7 @@
 
 ```
 iPhone (Element X) ──HTTPS──▶ tailscale serve (443)
-                                 ├── /_matrix     ─▶ 127.0.0.1:8008   Conduit/Tuwunel (Docker)
+                                 ├── /_matrix     ─▶ 127.0.0.1:8008   Tuwunel (Docker)
                                  └── /.well-known ─▶ 127.0.0.1:9111   静态 JSON
 服务器内部:
   家服务器 ── RocksDB (./db/)
@@ -176,7 +176,7 @@ POST /_matrix/client/v3/register
 1. iPhone 安装 Tailscale 应用（保持连接）和 Element X
 2. 在 Element X 登录界面选择 "Sign in manually → Change account provider →
    Other"，输入 `https://matrix.example.ts.net`
-   （二维码登录以 Matrix Authentication Service 为前提，Conduit 上不可用。
+   （二维码登录以 Matrix Authentication Service 为前提，Conduit/Tuwunel 上不可用。
    用用户名＋密码登录。Element X 先探测 OIDC 认证元数据，没有就回退到密码
    登录，所以没有 MAS 也能顺利通过）
 3. 用步骤 4 创建的账号登录

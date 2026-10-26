@@ -1,6 +1,6 @@
 [English](README.md) | [한국어](README-ko.md) | [简体中文](README-zh.md) | [日本語](README-ja.md)
 
-# Element X × Conduit × Tailscale — 완전 로컬 채팅 레시피
+# Element X × Tuwunel × Tailscale — 완전 로컬 채팅 레시피
 
 **matrix.org도, 공개 포트도, 클라우드 계정도 쓰지 않습니다.** 스마트폰과 자체
 서버 사이에서만 완결되는 Matrix 채팅 위에, 로컬 LLM으로 동작하는 AI 봇을 얹는
@@ -9,7 +9,7 @@
 
 ```
 iPhone (Element X) ──HTTPS──▶ tailscale serve (443)
-                                 ├── /_matrix     ─▶ 127.0.0.1:8008   Conduit/Tuwunel (Docker)
+                                 ├── /_matrix     ─▶ 127.0.0.1:8008   Tuwunel (Docker)
                                  └── /.well-known ─▶ 127.0.0.1:9111   정적 JSON
 서버 내부:
   홈서버 ── RocksDB (./db/)
@@ -184,7 +184,7 @@ POST /_matrix/client/v3/register
 1. iPhone에 Tailscale 앱(연결 ON)과 Element X를 설치
 2. Element X 로그인 화면에서 "Sign in manually → Change account provider →
    Other"를 골라 `https://matrix.example.ts.net` 입력
-   (QR 코드 로그인은 Matrix Authentication Service 전제라 Conduit에서는
+   (QR 코드 로그인은 Matrix Authentication Service 전제라 Conduit/Tuwunel에서는
    불가능합니다. 사용자명+비밀번호로 로그인합니다. Element X는 먼저 OIDC 인증
    메타데이터를 확인하고 없으면 비밀번호 로그인으로 폴백하므로 MAS 없이도
    순조롭게 통과합니다)
