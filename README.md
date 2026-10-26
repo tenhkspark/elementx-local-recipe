@@ -332,13 +332,13 @@ tailscaled → colima/Docker → コンテナ → 127.0.0.1:8008 → tailscale s
     `sync.rs` で `receipts.rooms` / `typing.rooms` がハードコードで空）。
     既読リクエスト自体はサーバーに正しく保存されるので、データは失われて
     いない。応急処置は Element X のキャッシュクリア（設定 → バージョン
-    番号を 7 回タップ → 開発者メニュー → Clear cache）。
-    **キャッシュクリアで実際に直ることを確認済み**（原因は、受領拡張が空の
-    期間に溜まったクライアント側の状態の腐り。キャッシュを消して同期し
-    直せばサーバー側の正しい既読状態に追いつく）。サーバー移行は
-    バッジが再発した時の次の一手。**Tuwunel は実機事前検証で受領拡張が
-    正常にデータを返すことを確認済み**（Conduit DB からの移行も公式対応
-    のため、アカウント・部屋・履歴をそのままにサーバーだけ差し替えられる）。
+    番号を 7 回タップ → 開発者メニュー → Clear cache）。**ただしキャッシュ
+    クリアは一時しのぎ**——検証環境では数時間で再発し、1 件の新着に対して
+    99+ のバッジが出て、クリア後も 30 件が残留した。**恒久直しはサーバーの
+    Tuwunel 移行**（受領拡張を実装済み・Conduit DB からの in-place 移行で
+    アカウント・部屋・履歴・ログインを全部維持・停止約 2 分）。移行の
+    手順は実機検証済み → [`docs/migrate-conduit-to-tuwunel.md`](
+    docs/migrate-conduit-to-tuwunel.md)。
 
 ---
 
@@ -365,8 +365,10 @@ Conduit の開発は実質 1 人でペースが落ちています（メディア
 > 実機検証メモ: Tuwunel（ghcr.io/matrix-construct/tuwunel）を同一ホストの
 > 別ポートに立てて受領拡張を実測したところ、sliding sync の
 > `extensions.receipts` に既読データが正しく返ることを確認しました
-> （Conduit v0.10.15 は常に空）。既読バッジが消えない問題の解決策として
-> 実証済みです。
+> （Conduit v0.10.15 は常に空）。この検証の後、実際に Conduit から Tuwunel へ
+> 移行して完了——未読バッジの問題は消失し、キャッシュクリアの応急処置も
+> 不要になりました。手順の全記録は
+> [`docs/migrate-conduit-to-tuwunel.md`](docs/migrate-conduit-to-tuwunel.md)。
 
 ---
 
