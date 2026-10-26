@@ -1,0 +1,6 @@
+.wd-state/
+*.log
+.env
+conduit.toml
+db/
+wellknown-root/

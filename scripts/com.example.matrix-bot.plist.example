@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- launchd template for the Matrix bot gateway (macOS).
+     Install: cp com.example.matrix-bot.plist ~/Library/LaunchAgents/
+              launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.example.matrix-bot.plist
+     The gateway reads credentials from $HERMES_HOME/.env (see matrix.env.example)
+     — never put secrets in this plist. -->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.example.matrix-bot</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/hermes</string>   <!-- path to the hermes CLI -->
+    <string>gateway</string>
+    <string>run</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/you/matrix-bot-home</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>HERMES_HOME</key>
+    <string>/Users/you/matrix-bot-home</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+  </dict>
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+  <key>LimitLoadToSessionType</key>
+  <array>
+    <string>Aqua</string>
+    <string>Background</string>
+  </array>
+  <key>StandardOutPath</key>
+  <string>/Users/you/matrix-bot-home/logs/gateway.out</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/you/matrix-bot-home/logs/gateway.err</string>
+</dict>
+</plist>

@@ -1,0 +1,34 @@
+[global]
+# Your server name. This becomes the domain part of every user ID
+# (@you:server_name) and CANNOT be changed later without losing all
+# accounts, rooms and history (Conduit refuses to reuse a DB after a
+# server_name change). Pick it once, carefully.
+# With Tailscale the natural choice is your machine's tailnet hostname,
+# e.g. "matrix.example.ts.net".
+server_name = "matrix.example.ts.net"
+port = 8008
+address = "0.0.0.0"
+database_path = "/var/lib/matrix-conduit"
+database_backend = "rocksdb"
+
+# LAN-only / tailnet-only server: no federation with the outside world.
+allow_federation = false
+trusted_servers = []
+
+# Registration is open but gated by a shared token, so new accounts can
+# only be created by someone who has the token (Element X cannot create
+# accounts on its own — see README "Create accounts").
+# NOTE: an empty string here is a startup error.
+allow_registration = true
+registration_token = "CHANGE_ME_LONG_RANDOM_TOKEN"
+
+# Max upload size in bytes (20 MB here).
+max_request_size = 20000000
+
+# well-known served by Conduit itself (optional — the static file server on
+# :9111 also serves it; keep both pointing at the same URL).
+# IMPORTANT: the correct form is this [global.well_known] SUBTABLE.
+# The flat key "well_known_client" you see in conduwuit/continuwuity configs
+# is a FORK-only key name — upstream Conduit silently ignores it.
+[global.well_known]
+client = "https://matrix.example.ts.net"
