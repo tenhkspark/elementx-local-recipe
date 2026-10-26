@@ -331,11 +331,11 @@ tailscaled → colima/Docker → コンテナ → 127.0.0.1:8008 → tailscale s
     届くが、Conduit v0.10.15 はこの応答を常に空で返す（ソース確認:
     `sync.rs` で `receipts.rooms` / `typing.rooms` がハードコードで空）。
     既読リクエスト自体はサーバーに正しく保存されるので、データは失われて
-    いない。応急処置は部屋一覧の長押し →「既読にする」。恒久直しは
-    フォークへの移行（conduwuit 0.4.6+ / continuwuity は受領拡張実装済み。
-    tuwunel も一部の未読マーカー問題を自認して修正中）。Synapse は
-    element-hq/synapse#17617 で同種のバグ（自分の既読が sliding sync に
-    返らない）を修正済み。
+    いない。応急処置は Element X のキャッシュクリア（設定 → バージョン
+    番号を 7 回タップ → 開発者メニュー → Clear cache）。恒久直しは
+    フォークへの移行。**Tuwunel は実機事前検証で受領拡張が正常にデータを
+    返すことを確認済み**（Conduit DB からの移行も公式対応のため、
+    アカウント・部屋・履歴をそのままにサーバーだけ差し替えられる）。
 
 ---
 
@@ -358,6 +358,12 @@ Conduit の開発は実質 1 人でペースが落ちています（メディア
 **移行先でも server_name と DB のバックアップはそのまま**使えます（移行実績は
 「全アカウント・内容無傷」）。このレシピの tailscale serve・well-known・bot 側は
 変えずに済むはずです。
+
+> 実機検証メモ: Tuwunel（ghcr.io/matrix-construct/tuwunel）を同一ホストの
+> 別ポートに立てて受領拡張を実測したところ、sliding sync の
+> `extensions.receipts` に既読データが正しく返ることを確認しました
+> （Conduit v0.10.15 は常に空）。既読バッジが消えない問題の解決策として
+> 実証済みです。
 
 ---
 
