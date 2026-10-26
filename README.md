@@ -326,6 +326,16 @@ tailscaled → colima/Docker → コンテナ → 127.0.0.1:8008 → tailscale s
     クライアントの再起動で反映される。
 14. **登録トークンは静的な 1 本**（config に書くだけ）。期限付きの複数トークンが
     要ればフォーク（Continuwuity の admin room トークン等）を検討する。
+15. **「読んでも既読にならない」は本家 Conduit の既知の未修正バグ。**
+    Element X の既読・入力中表示は sliding sync の受領拡張（MSC3960）で
+    届くが、Conduit v0.10.15 はこの応答を常に空で返す（ソース確認:
+    `sync.rs` で `receipts.rooms` / `typing.rooms` がハードコードで空）。
+    既読リクエスト自体はサーバーに正しく保存されるので、データは失われて
+    いない。応急処置は部屋一覧の長押し →「既読にする」。恒久直しは
+    フォークへの移行（conduwuit 0.4.6+ / continuwuity は受領拡張実装済み。
+    tuwunel も一部の未読マーカー問題を自認して修正中）。Synapse は
+    element-hq/synapse#17617 で同種のバグ（自分の既読が sliding sync に
+    返らない）を修正済み。
 
 ---
 
