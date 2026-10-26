@@ -55,27 +55,24 @@ federation はオフ（`allow_federation = false`）。外部サーバーとつ�
 
 ---
 
-## 1. Homeserver: Conduit を Docker で動かす
+## 1. 家サーバー: Tuwunel を Docker で動かす
 
-[Conduit](https://conduit.rs) は軽量な Matrix homeserver（Rust・単一バイナリ）。
-RocksDB のデータディレクトリ 1 つで完結し、バックアップもディレクトリごと
-コピーするだけです。
-
-**バージョンは 0.10.15（執筆時最新）以上を使ってください。** Element X は
-Simplified Sliding Sync（MSC4186）を必須とし、Conduit では 0.10.0 以降が
-対応しています。セキュリティ修正の履歴にも注意してください:
-CVE-2025-68667 と CVE-2026-24471（federation invite 周りの乗っ取り系）は
-0.10.11 で修正、さらに 0.10.13/0.10.14 で認証バイパス系の重大脆弱性が
-修正されています。**最低ラインは 0.10.14、できれば最新を使うこと**
-（Conduit のリリースは遅いので、CVE 情報は自分で追うこと）。
+[Tuwunel](https://github.com/matrix-construct/tuwunel) は Conduit 系で活発に
+保守されている実装です（軽量な Matrix homeserver・Rust・単一バイナリ・全データ
+は RocksDB ディレクトリ 1 つ）。このレシピはこれを標準としています: Element X
+が既読状態に使う sliding sync の受領拡張を実装しているため、本家 Conduit が
+抱える未読バッジバグ（gotcha #15）は最初から存在しません。このレシピの参照
+サーバーは Tuwunel v1.9.4 で運用中です。
 
 ```bash
 git clone https://github.com/<you>/elementx-local-recipe.git
 cd elementx-local-recipe/scripts
-cp conduit.toml.example conduit.toml
-# conduit.toml を編集:
+cp tuwunel.toml.example tuwunel.toml
+# tuwunel.toml を編集:
 #   server_name         ← 永久に使う名前（上の注意を読むこと）
 #   registration_token  ← 長いランダム文字列（例: openssl rand -hex 16）
+#   注意: トークンは DB 初回作成時に読まれます。後から config を変えても
+#         既存 DB には反映されません。
 ./run-matrix.sh
 curl -s http://127.0.0.1:8008/_matrix/client/versions   # JSONが返ればOK
 ```
@@ -90,8 +87,16 @@ colima start --vm-type vz --cpu 2 --memory 2 --disk 20 --mount-type virtiofs \
   --dns 1.1.1.1 --dns 8.8.8.8
 ```
 
-Conduit は `127.0.0.1:8008` でだけ listen します。TLS は次の tailscale serve
+サーバーは `127.0.0.1:8008` でだけ listen します。TLS は次の tailscale serve
 が前段で受け持つので、サーバー自身の証明書は不要です。
+
+> 本家 Conduit を使いたい場合も動きます（`conduit.toml.example`）——ただし
+> **0.10.14 以降**を使うこと（CVE-2025-68667 / CVE-2026-24471 は 0.10.11 で
+> 修正、認証バイパス系は 0.10.13/0.10.14 で修正。リリースが遅いので CVE 情報は
+> 自分で追うこと）。さらに **gotcha #15** に注意: 本家の simplified sliding
+> sync は受領拡張を常に空で返すため Element X の未読バッジが固まります。恒久解
+> は Tuwunel への移行です —
+> [`docs/migrate-conduit-to-tuwunel.md`](docs/migrate-conduit-to-tuwunel.md)。
 
 ---
 

@@ -55,24 +55,22 @@ federation 关闭（`allow_federation = false`）。代价是与外部 Matrix �
 
 ---
 
-## 1. 家服务器：用 Docker 跑 Conduit（或 Tuwunel）
+## 1. 家服务器：用 Docker 跑 Tuwunel
 
-[Conduit](https://conduit.rs) 是轻量的 Matrix 家服务器（Rust、单一二进制）。
-一切都装在一个 RocksDB 目录里，备份就是复制该目录。
-
-**请使用 0.10.15（撰写时最新）或更新版本。** Element X 要求 Simplified
-Sliding Sync（MSC4186），Conduit 自 0.10.0 起支持。还要注意安全历史：
-CVE-2025-68667 与 CVE-2026-24471（federation invite 相关的账号接管类）已在
-0.10.11 修复，0.10.13/0.10.14 又修复了认证绕过类的重大漏洞。**下限是
-0.10.14，尽量用最新版**（Conduit 发布节奏慢，CVE 信息要自己跟进）。
+[Tuwunel](https://github.com/matrix-construct/tuwunel) 是 Conduit 系中仍在
+积极维护的实现（轻量 Matrix 家服务器·Rust·单一二进制·所有数据都在一个
+RocksDB 目录）。本方案默认使用它：它实现了 Element X 用于已读状态的 sliding
+sync 回执扩展，所以上游 Conduit 自带的未读角标 bug（gotcha #15）在这里根本
+不存在。本方案的参考服务器正以 Tuwunel v1.9.4 运行。
 
 ```bash
 git clone https://github.com/<you>/elementx-local-recipe.git
 cd elementx-local-recipe/scripts
-cp conduit.toml.example conduit.toml
-# 编辑 conduit.toml：
+cp tuwunel.toml.example tuwunel.toml
+# 编辑 tuwunel.toml：
 #   server_name         ← 永久使用的名字（先读上面的注意事项）
 #   registration_token  ← 长随机字符串（例如 openssl rand -hex 16）
+#   注意：令牌在数据库首次创建时读取。之后改配置对已有数据库无效。
 ./run-matrix.sh
 curl -s http://127.0.0.1:8008/_matrix/client/versions   # 返回 JSON 即成功
 ```
@@ -89,8 +87,11 @@ colima start --vm-type vz --cpu 2 --memory 2 --disk 20 --mount-type virtiofs \
 家服务器只监听 `127.0.0.1:8008`。TLS 由前面的 tailscale serve 终结，服务器
 自身不需要证书。
 
-> 如果遇到 gotcha #15 的"已读但未读角标不消失"问题，把家服务器迁移到
-> Tuwunel 可以永久解决——参见
+> 想用官方 Conduit 也可以（`conduit.toml.example`）——但请用 **0.10.14 或
+> 更新版本**（CVE-2025-68667 / CVE-2026-24471 已在 0.10.11 修复，认证绕过类
+> 在 0.10.13/0.10.14 修复；发布节奏慢，CVE 信息要自己跟进），并注意
+> **gotcha #15**：官方版的 simplified sliding sync 永远返回空的回执扩展，
+> Element X 的未读角标会卡住。永久解法是迁移到 Tuwunel——
 > [`docs/migrate-conduit-to-tuwunel.md`](docs/migrate-conduit-to-tuwunel.md)。
 
 ---

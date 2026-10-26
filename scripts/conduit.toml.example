@@ -1,4 +1,6 @@
 [global]
+# Config for the upstream-Conduit alternative path (README §1 note + gotcha #15).
+# Tuwunel users: use tuwunel.toml.example instead.
 # Your server name. This becomes the domain part of every user ID
 # (@you:server_name) and CANNOT be changed later without losing all
 # accounts, rooms and history (Conduit refuses to reuse a DB after a

@@ -1,0 +1,31 @@
+[global]
+# Your server name. This becomes the domain part of every user ID
+# (@you:server_name) and CANNOT be changed later without losing all
+# accounts, rooms and history. Pick it once, carefully.
+# With Tailscale the natural choice is your machine's tailnet hostname,
+# e.g. "matrix.example.ts.net".
+server_name = "matrix.example.ts.net"
+port = 8008
+address = "0.0.0.0"
+database_path = "/var/lib/tuwunel"
+
+# Tuwunel uses RocksDB; io_uring is managed automatically.
+
+# LAN-only / tailnet-only server: no federation with the outside world.
+allow_federation = false
+trusted_servers = []
+
+# Registration is open but gated by a shared token, so new accounts can
+# only be created by someone who has the token (Element X cannot create
+# accounts on its own — see README "Create accounts").
+allow_registration = true
+registration_token = "CHANGE_ME_LONG_RANDOM_TOKEN"
+# NOTE: the token is read when the database is FIRST created. Changing it
+# in the config later has no effect on an existing database.
+
+# Max upload size in bytes (20 MB here).
+max_request_size = 20000000
+
+# Tuwunel (conduwuit lineage) serves /.well-known/matrix/client itself with
+# these flat keys — upstream Conduit would ignore them, Tuwunel honors them.
+well_known_client = "https://matrix.example.ts.net"

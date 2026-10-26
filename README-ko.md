@@ -56,26 +56,24 @@ federation은 끕니다(`allow_federation = false`). 외부 Matrix 서버와는
 
 ---
 
-## 1. 홈서버: Conduit(또는 Tuwunel)을 Docker로
+## 1. 홈서버: Docker로 Tuwunel
 
-[Conduit](https://conduit.rs)은 가벼운 Matrix 홈서버(Rust, 단일 바이너리)입니다.
-모든 것이 RocksDB 디렉터리 하나로 완결되므로 백업도 그 디렉터리를 복사하는
-것뿐입니다.
-
-**0.10.15(집필 시점 최신) 이상을 사용하세요.** Element X는 Simplified Sliding
-Sync(MSC4186)를 필수로 하며, Conduit은 0.10.0부터 지원합니다. 보안 이력도
-주의하세요: CVE-2025-68667과 CVE-2026-24471(federation invite 관련 계정 탈취
-계열)는 0.10.11에서 수정되었고, 추가로 0.10.13/0.10.14에서 인증 우회 계열의
-중대 취약점이 수정되었습니다. **최소선은 0.10.14, 가능하면 최신을 사용하세요**
-(Conduit 릴리스가 느리므로 CVE 정보는 직접 추적해야 합니다).
+[Tuwunel](https://github.com/matrix-construct/tuwunel)은 Conduit 계열에서
+활발히 유지보수되는 구현입니다(가벼운 Matrix 홈서버·Rust·단일 바이너리·모든
+데이터는 RocksDB 디렉터리 하나). 이 레시피는 이것을 기본으로 사용합니다:
+Element X가 읽음 상태에 쓰는 sliding sync 수신 확장을 구현하고 있어, 본가
+Conduit이 가진 읽지 않음 배지 버그(gotcha #15)는 처음부터 존재하지 않습니다.
+이 레시피의 참조 서버는 Tuwunel v1.9.4로 운영 중입니다.
 
 ```bash
 git clone https://github.com/<you>/elementx-local-recipe.git
 cd elementx-local-recipe/scripts
-cp conduit.toml.example conduit.toml
-# conduit.toml 편집:
+cp tuwunel.toml.example tuwunel.toml
+# tuwunel.toml 편집:
 #   server_name         ← 영원히 쓸 이름(위의 주의를 읽을 것)
 #   registration_token  ← 긴 랜덤 문자열(예: openssl rand -hex 16)
+#   주의: 토큰은 DB를 처음 만들 때 읽힙니다. 나중에 config을 바꿔도 기존 DB에는
+#         반영되지 않습니다.
 ./run-matrix.sh
 curl -s http://127.0.0.1:8008/_matrix/client/versions   # JSON이 돌아오면 OK
 ```
@@ -93,9 +91,13 @@ colima start --vm-type vz --cpu 2 --memory 2 --disk 20 --mount-type virtiofs \
 홈서버는 `127.0.0.1:8008`에서만 listen합니다. TLS는 앞단의 tailscale serve가
 처리하므로 서버 자체에 인증서가 필요 없습니다.
 
-> gotcha #15의 "읽었는데 읽지 않음 배지" 문제를 겪는다면 홈서버를 Tuwunel로
-> 이전하면 영구적으로 해결됩니다 —
-> [`docs/migrate-conduit-to-tuwunel.md`](docs/migrate-conduit-to-tuwunel.md) 참고.
+> 본가 Conduit을 쓰고 싶어도 동작합니다(`conduit.toml.example`) — 단,
+> **0.10.14 이상**을 사용하세요(CVE-2025-68667 / CVE-2026-24471은 0.10.11에서
+> 수정, 인증 우회 계열은 0.10.13/0.10.14에서 수정. 릴리스가 느리므로 CVE 정보는
+> 직접 추적). 그리고 **gotcha #15** 주의: 본가의 simplified sliding sync는 수신
+> 확장을 항상 비워서 돌려주므로 Element X의 읽지 않음 배지가 붙습니다. 영구
+> 해결은 Tuwunel로의 이전입니다 —
+> [`docs/migrate-conduit-to-tuwunel.md`](docs/migrate-conduit-to-tuwunel.md).
 
 ---
 

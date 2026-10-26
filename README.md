@@ -58,27 +58,25 @@ Matrix servers and gain an attack surface close to zero.
 
 ---
 
-## 1. Homeserver: Conduit (or Tuwunel) in Docker
+## 1. Homeserver: Tuwunel in Docker
 
-[Conduit](https://conduit.rs) is a lightweight Matrix homeserver (Rust, a
-single binary). Everything lives in one RocksDB directory, so backing up means
-copying that directory.
-
-**Use 0.10.15 (the latest at the time of writing) or newer.** Element X
-requires Simplified Sliding Sync (MSC4186), which Conduit supports since
-0.10.0. Mind the security history too: CVE-2025-68667 and CVE-2026-24471
-(account-takeover issues around federation invites) were fixed in 0.10.11, and
-further auth-bypass vulnerabilities were fixed in 0.10.13/0.10.14. **The
-minimum is 0.10.14; prefer the latest** (Conduit releases are slow, so track
-CVEs yourself).
+[Tuwunel](https://github.com/matrix-construct/tuwunel) is the actively
+maintained member of the Conduit family — a lightweight Matrix homeserver
+(Rust, a single binary, everything in one RocksDB directory). This recipe uses
+it as the default: it implements the sliding-sync receipts extension that
+Element X uses for read state, so the stuck-unread-badge bug that upstream
+Conduit ships with (gotcha #15) does not exist here. The reference server for
+this recipe runs Tuwunel v1.9.4.
 
 ```bash
 git clone https://github.com/<you>/elementx-local-recipe.git
 cd elementx-local-recipe/scripts
-cp conduit.toml.example conduit.toml
-# edit conduit.toml:
+cp tuwunel.toml.example tuwunel.toml
+# edit tuwunel.toml:
 #   server_name         ← the name you will use forever (read the note above)
 #   registration_token  ← a long random string (e.g. openssl rand -hex 16)
+#   NOTE: the token is read when the database is first created. Changing it
+#         in the config later has no effect on an existing database.
 ./run-matrix.sh
 curl -s http://127.0.0.1:8008/_matrix/client/versions   # JSON = OK
 ```
@@ -96,8 +94,12 @@ colima start --vm-type vz --cpu 2 --memory 2 --disk 20 --mount-type virtiofs \
 The homeserver listens on `127.0.0.1:8008` only. TLS is terminated by
 tailscale serve in front of it, so the server itself needs no certificates.
 
-> If you hit the stuck-unread-badge problem described in gotcha #15, migrating
-> the homeserver to Tuwunel fixes it permanently — see
+> Prefer upstream Conduit? It works too (`conduit.toml.example`) — use
+> **0.10.14 or newer** (CVE-2025-68667 / CVE-2026-24471 were fixed in 0.10.11,
+> auth-bypass fixes landed in 0.10.13/0.10.14; releases are slow, so track
+> CVEs yourself) and mind **gotcha #15**: its simplified sliding sync returns
+> an always-empty receipts extension, so Element X unread badges get stuck.
+> The permanent fix is migrating to Tuwunel —
 > [`docs/migrate-conduit-to-tuwunel.md`](docs/migrate-conduit-to-tuwunel.md).
 
 ---

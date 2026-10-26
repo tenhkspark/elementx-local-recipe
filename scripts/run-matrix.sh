@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
-# run-matrix.sh — launch a private Conduit (Matrix homeserver) in Docker.
+# run-matrix.sh — launch the Tuwunel homeserver (Conduit lineage) in Docker.
 # Designed for a Mac mini + colima, but any Docker host works.
 #
 # Usage:
-#   ./run-matrix.sh            # first run creates ./conduwuit.toml from the template if missing
+#   ./run-matrix.sh            # first run: create ./tuwunel.toml from the template if missing
 #
 # Layout (all under the directory this script lives in):
-#   ./conduwuit.toml   homeserver config (edit server_name + registration_token)
-#   ./db/              RocksDB data directory (bind-mounted into the container)
+#   ./tuwunel.toml   homeserver config (edit server_name + registration_token)
+#   ./db/            RocksDB data directory (bind-mounted into the container)
 #
 # The server listens on 127.0.0.1:8008 only. TLS is terminated by
-# `tailscale serve` in front of it (see docs in README.md).
+# `tailscale serve` in front of it (see README.md).
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-IMAGE="${CONDUIT_IMAGE:-matrixconduit/matrix-conduit:v0.10.15}"
+IMAGE="${HS_IMAGE:-ghcr.io/matrix-construct/tuwunel:latest}"
 
-if [ ! -f "$HERE/conduit.toml" ]; then
-  echo "conduit.toml not found — copy it from conduit.toml.example and edit server_name first." >&2
+if [ ! -f "$HERE/tuwunel.toml" ]; then
+  echo "tuwunel.toml not found — copy it from tuwunel.toml.example and edit server_name first." >&2
   exit 1
 fi
 
@@ -28,7 +28,7 @@ exec docker run -d \
   --name matrix-server \
   --restart always \
   -p 127.0.0.1:8008:8008 \
-  -e CONDUIT_CONFIG=/etc/matrix-conduit/conduwuit.toml \
-  -v "$HERE/db":/var/lib/matrix-conduit \
-  -v "$HERE/conduit.toml":/etc/matrix-conduit/conduwuit.toml:ro \
+  -e TUWUNEL_CONFIG=/etc/tuwunel.toml \
+  -v "$HERE/db":/var/lib/tuwunel \
+  -v "$HERE/tuwunel.toml":/etc/tuwunel.toml:ro \
   "$IMAGE"
