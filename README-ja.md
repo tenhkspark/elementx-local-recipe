@@ -2,7 +2,7 @@
 
 # Element X × Tuwunel × Tailscale — 自宅完結チャット・レシピ
 
-**matrix.org も、公開ポートも、クラウドアカウントも使わない。** スマホと自宅サーバー
+**matrix.org も、公開ポートも、クラウドのチャットアカウントも使わない。** スマホと自宅サーバー
 の間だけで完結する Matrix チャットに、ローカル LLM の AI bot を足す手順。
 すべて実機（Mac mini + iPhone + Element X）で動作確認済みの構成です。
 

@@ -2,7 +2,7 @@
 
 # Element X × Tuwunel × Tailscale — 완전 로컬 채팅 레시피
 
-**matrix.org도, 공개 포트도, 클라우드 계정도 쓰지 않습니다.** 스마트폰과 자체
+**matrix.org도, 공개 포트도, 클라우드 채팅 계정도 쓰지 않습니다.** 스마트폰과 자체
 서버 사이에서만 완결되는 Matrix 채팅 위에, 로컬 LLM으로 동작하는 AI 봇을 얹는
 절차입니다. 아래 내용 전체는 Mac mini + iPhone + Element X로 매일 사용하는
 구성에서 검증된 것입니다.

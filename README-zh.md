@@ -2,7 +2,7 @@
 
 # Element X × Tuwunel × Tailscale — 完全本地化聊天方案
 
-**不用 matrix.org、不开公网端口、不用云账号。** 在手机与自家服务器之间完整
+**不用 matrix.org、不开公网端口、不用云端聊天账号。** 在手机与自家服务器之间完整
 运行的 Matrix 聊天，再叠加一个由本地 LLM 驱动的 AI 机器人。以下全部内容来自
 在 Mac mini + iPhone + Element X 上日常使用的真实配置，并经实测验证。
 

@@ -2,7 +2,7 @@
 
 # Element X × Tuwunel × Tailscale — a fully local chat recipe
 
-**No matrix.org, no open ports, no cloud accounts.** A Matrix chat that runs
+**No matrix.org, no open ports, no cloud chat account.** A Matrix chat that runs
 entirely between your phone and your own server — with an AI bot powered by a
 local LLM on top. Every step below is from a configuration in daily use on a
 Mac mini + iPhone + Element X.
